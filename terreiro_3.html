@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terreiro Mãe Tupiara — Eventos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0F0B1A;--card:#1A1428;--card2:#221C35;--border:#2E2648;--gold:#C9A96E;--gold2:#E8C98A;--purple:#7C5CBF;--green:#2ECC8F;--greenLight:rgba(46,204,143,0.08);--amber:#E8A930;--amberLight:rgba(232,169,48,0.12);--text:#F0EBF8;--muted:#8A7FA8;--danger:#E05C5C}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:80px}
+.header{background:linear-gradient(180deg,#1A0F2E 0%,#0F0B1A 100%);border-bottom:1px solid var(--border);padding:20px 16px 16px;position:sticky;top:0;z-index:100}
+.header-inner{max-width:600px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.header-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold)}
+.header-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.admin-btn{background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.3);color:var(--gold);border-radius:20px;padding:7px 16px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500}
+.main{max-width:600px;margin:0 auto;padding:16px}
+.card{background:var(--card);border-radius:16px;border:1px solid var(--border);margin-bottom:16px;overflow:hidden}
+.event-header{padding:18px 16px 14px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#1A1428 0%,#221830 100%)}
+.event-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold2);display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.event-date{font-size:12px;color:var(--muted);margin-bottom:10px}
+.obs{font-size:12px;color:var(--muted);background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:10px 12px;line-height:1.7;margin-top:10px}
+.progress-wrap{margin-top:12px}
+.progress-label{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:5px}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--gold));border-radius:2px;transition:width .5s ease}
+.section-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;padding:10px 16px 8px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border)}
+.item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.item:hover{background:rgba(255,255,255,0.03)}
+.item.done{background:var(--greenLight)}
+.check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.item.done .check{background:var(--green);border-color:var(--green)}
+.chk{display:none}.item.done .chk{display:block}
+.item-desc{flex:1;font-size:14px;line-height:1.4}
+.item.done .item-desc{color:var(--green);text-decoration:line-through;opacity:.7}
+.owner-badge{font-size:11px;background:rgba(124,92,191,0.2);color:#B49EE0;border-radius:20px;padding:3px 10px;font-weight:500;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.pending-badge{font-size:11px;background:var(--amberLight);color:var(--amber);border-radius:20px;padding:3px 10px;font-weight:500;flex-shrink:0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.modal-box{background:var(--card2);border-radius:20px 20px 0 0;border:1px solid var(--border);border-bottom:none;padding:24px 20px 40px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold2);margin-bottom:16px}
+.item-preview{background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:14px;color:var(--gold);line-height:1.4}
+label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px}
+input[type=text],input[type=password]{width:100%;padding:12px 14px;background:rgba(255,255,255,0.05);border:1.5px solid var(--border);border-radius:10px;font-size:15px;color:var(--text);outline:none;margin-bottom:12px;font-family:'DM Sans',sans-serif;transition:border .2s}
+input[type=text]:focus,input[type=password]:focus{border-color:var(--purple)}
+.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--purple),#5B3FA8);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-secondary{width:100%;padding:12px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif}
+.btn-danger{background:rgba(224,92,92,0.15);color:var(--danger);border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-small{background:rgba(124,92,191,0.15);color:#B49EE0;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-gold{background:rgba(201,169,110,0.15);color:var(--gold);border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.autocomplete-wrap{position:relative;margin-bottom:12px}
+.autocomplete-wrap input{margin-bottom:0;width:100%}
+.suggestions{position:absolute;top:100%;left:0;right:0;background:var(--card2);border:1px solid var(--border);border-radius:0 0 10px 10px;max-height:200px;overflow-y:auto;z-index:500}
+.suggestion-item{padding:10px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.suggestion-item:hover{background:rgba(124,92,191,0.15)}
+.suggestion-cat{font-size:10px;color:var(--muted)}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:0}
+.tab-btn{flex:1;padding:12px;font-size:13px;font-weight:500;cursor:pointer;background:transparent;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.bulk-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer}
+.bulk-item:hover{background:rgba(255,255,255,0.03)}
+.bulk-check{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:transparent}
+.bulk-check.sel{background:var(--purple);border-color:var(--purple)}
+.catalog-row{display:flex;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid var(--border)}
+.admin-event-hdr{padding:12px 16px;background:rgba(201,169,110,0.06);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-title">🕯️ Terreiro Mãe Tupiara</div>
+      <div class="header-sub"><span class="sync-dot"></span><span id="header-sub">conectando...</span></div>
+    </div>
+    <button class="admin-btn" onclick="toggleAdmin()">⚙️ Admin</button>
+  </div>
+</div>
+<div class="main" id="main"><div style="text-align:center;padding:40px;color:var(--muted)">🕯️ Carregando...</div></div>
+
+<!-- Claim -->
+<div class="modal" id="modal-claim" onclick="closeModal('claim')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">✦ Confirmar item</div>
+    <div class="item-preview" id="claim-desc"></div>
+    <label>Seu nome</label>
+    <input type="text" id="claim-name" placeholder="Ex: Maria, João..." onkeydown="if(event.key==='Enter')claimItem()">
+    <button class="btn-primary" onclick="claimItem()">Confirmar que vou levar</button>
+    <button class="btn-secondary" onclick="closeModal('claim')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Admin login -->
+<div class="modal" id="modal-admin-login" onclick="closeModal('admin-login')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">🔐 Acesso Admin</div>
+    <label>Senha</label>
+    <input type="password" id="admin-pass" placeholder="Senha..." onkeydown="if(event.key==='Enter')loginAdmin()">
+    <div style="color:var(--danger);font-size:13px;margin-bottom:8px;display:none" id="admin-error">Senha incorreta.</div>
+    <button class="btn-primary" onclick="loginAdmin()">Entrar</button>
+    <button class="btn-secondary" onclick="closeModal('admin-login')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Add event -->
+<div class="modal" id="modal-add-event" onclick="closeModal('add-event')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">✦ Novo Evento</div>
+    <label>Emoji</label><input type="text" id="new-emoji" value="🌟">
+    <label>Nome</label><input type="text" id="new-title" placeholder="Ex: Gira de Oxalá">
+    <label>Data</label><input type="text" id="new-date" placeholder="Ex: 15/06/2025">
+    <label>Observações</label><input type="text" id="new-obs" placeholder="Instruções...">
+    <button class="btn-primary" onclick="addEvent()">Criar Evento</button>
+    <button class="btn-secondary" onclick="closeModal('add-event')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Add item -->
+<div class="modal" id="modal-add-item" onclick="closeModal('add-item')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">✦ Adicionar Item</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">Item único</button>
+      <button class="tab-btn" id="tab-bulk" onclick="switchTab('bulk')">Vários do catálogo</button>
+    </div>
+    <div id="single-content" style="padding-top:16px">
+      <label>Descrição</label>
+      <div class="autocomplete-wrap">
+        <input type="text" id="new-item-desc" placeholder="Digite ou escolha do catálogo..." oninput="showSugg()" onkeydown="handleKey(event)" autocomplete="off">
+        <div class="suggestions" id="suggestions" style="display:none"></div>
+      </div>
+      <label>Responsável (opcional)</label>
+      <input type="text" id="new-item-owner" placeholder="Ex: Karla" onkeydown="if(event.key==='Enter')saveItem()">
+      <button class="btn-primary" onclick="saveItem()">Adicionar</button>
+    </div>
+    <div id="bulk-content" style="display:none;padding-top:12px">
+      <input type="text" id="bulk-search" placeholder="Filtrar catálogo..." oninput="renderBulk()" style="margin-bottom:8px">
+      <div id="bulk-list" style="max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;margin-bottom:12px"></div>
+      <button class="btn-primary" onclick="saveBulk()">Adicionar selecionados</button>
+    </div>
+    <button class="btn-secondary" onclick="closeModal('add-item')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Catalog -->
+<div class="modal" id="modal-catalog" onclick="closeModal('catalog')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">📦 Catálogo de Produtos</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" id="cat-name" placeholder="Nome do produto..." style="flex:1;margin-bottom:0">
+      <input type="text" id="cat-cat" placeholder="Categoria" style="width:120px;margin-bottom:0">
+    </div>
+    <button class="btn-primary" onclick="addCatalog()" style="margin-bottom:16px">+ Adicionar ao catálogo</button>
+    <div id="catalog-list"></div>
+    <button class="btn-secondary" onclick="closeModal('catalog')">Fechar</button>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import{getFirestore,collection,doc,onSnapshot,setDoc,updateDoc,deleteDoc,getDocs,writeBatch}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const cfg={apiKey:"AIzaSyAaEYRxCU1vqqRD8Ug0BVX6XG-iwjHzQ1A",authDomain:"terreiro-giras.firebaseapp.com",projectId:"terreiro-giras",storageBucket:"terreiro-giras.firebasestorage.app",messagingSenderId:"957777921310",appId:"1:957777921310:web:f4d9ab1c6e6264a5da350f"};
+const db=getFirestore(initializeApp(cfg));
+const PASS="terreiro2025";
+let adminMode=false,view="home",events=[],catalog=[],claimEvId,claimSecIdx,claimItemId,addEvId,addSecIdx,bulkSel=new Set();
+
+const defaultCatalog=[
+  {id:"c1",name:"Vela branca palito",cat:"Velas"},{id:"c2",name:"Vela preta palito",cat:"Velas"},{id:"c3",name:"Vela vermelha palito",cat:"Velas"},{id:"c4",name:"Vela verde palito",cat:"Velas"},{id:"c5",name:"Vela de 7 dias",cat:"Velas"},
+  {id:"c6",name:"Cachaça",cat:"Bebidas"},{id:"c7",name:"Vinho tinto",cat:"Bebidas"},{id:"c8",name:"Champanhe",cat:"Bebidas"},{id:"c9",name:"Água mineral",cat:"Bebidas"},{id:"c10",name:"Leite 1 litro",cat:"Bebidas"},{id:"c45",name:"Refrigerante",cat:"Bebidas"},{id:"c46",name:"Suco",cat:"Bebidas"},
+  {id:"c11",name:"Mel",cat:"Alimentos"},{id:"c12",name:"Farofa",cat:"Alimentos"},{id:"c13",name:"Milho de pipoca",cat:"Alimentos"},{id:"c14",name:"Canjica branca",cat:"Alimentos"},{id:"c15",name:"Farinha de milho branca",cat:"Alimentos"},{id:"c16",name:"Café",cat:"Alimentos"},{id:"c17",name:"Açúcar",cat:"Alimentos"},{id:"c18",name:"Sal grosso",cat:"Alimentos"},{id:"c40",name:"Azeitona preta",cat:"Alimentos"},{id:"c41",name:"Salame 200g",cat:"Alimentos"},{id:"c42",name:"Pão francês",cat:"Alimentos"},{id:"c43",name:"Bolo",cat:"Alimentos"},{id:"c44",name:"Torta salgada",cat:"Alimentos"},{id:"c47",name:"Mussarela",cat:"Alimentos"},{id:"c48",name:"Peito de frango defumado",cat:"Alimentos"},{id:"c49",name:"Patê de frango",cat:"Alimentos"},{id:"c50",name:"Requeijão",cat:"Alimentos"},
+  {id:"c19",name:"Mamão",cat:"Frutas"},{id:"c20",name:"Banana",cat:"Frutas"},{id:"c21",name:"Maçã",cat:"Frutas"},{id:"c22",name:"Laranja",cat:"Frutas"},{id:"c23",name:"Uva",cat:"Frutas"},{id:"c24",name:"Coco seco",cat:"Frutas"},{id:"c25",name:"Abacaxi",cat:"Frutas"},
+  {id:"c26",name:"Rosas brancas",cat:"Flores"},{id:"c27",name:"Rosas vermelhas",cat:"Flores"},{id:"c28",name:"Rosas amarelas",cat:"Flores"},{id:"c29",name:"Crisântemos",cat:"Flores"},
+  {id:"c30",name:"Arruda",cat:"Ervas"},{id:"c31",name:"Guiné",cat:"Ervas"},{id:"c32",name:"Alecrim",cat:"Ervas"},{id:"c33",name:"Alfazema 1 litro",cat:"Ervas"},
+  {id:"c34",name:"Charuto",cat:"Outros"},{id:"c35",name:"Fósforo",cat:"Outros"},{id:"c36",name:"Carvão",cat:"Outros"},{id:"c37",name:"Incenso",cat:"Outros"},{id:"c38",name:"Obi",cat:"Outros"},{id:"c39",name:"Dendê 1 litro",cat:"Outros"},
+];
+
+const defaultEvents=[{
+  id:"gira-esquerda",title:"Gira de Esquerda",date:"08/05/2025",emoji:"🌹",order:1,
+  obs:"Burilados/Feitos: pratos das entidades semi-prontos. Coroados: bebida + cigarro/charruto. Médium de passe leva seu próprio material. Cada médium: 2 panos de chão (1 branco).",
+  sections:[
+    {title:"Limpeza",items:[
+      {id:"i101",desc:"Desinfetante 2 litros",owner:"Dani Cida",done:true},{id:"i102",desc:"4 detergentes",owner:"Arli",done:true},{id:"i103",desc:"1 cx sabão em pó",owner:"",done:false},{id:"i104",desc:"12 papel higiênico",owner:"Fabi",done:true},{id:"i105",desc:"2 papel toalha",owner:"Silvia",done:true},{id:"i106",desc:"1 papel alumínio",owner:"Karla",done:true},{id:"i107",desc:"Plástico filme",owner:"Karla",done:true},{id:"i108",desc:"Perflex",owner:"Antônio",done:true},{id:"i109",desc:"Filtro de café n°3",owner:"Arli",done:true},{id:"i110",desc:"1 pacote bombril",owner:"Sofia",done:true},{id:"i111",desc:"1 pacote esponja de louça",owner:"Tati",done:true},{id:"i112",desc:"1 pedra sabão coco",owner:"Tati",done:true},{id:"i113",desc:"1 rodo pequeno",owner:"",done:false},
+    ]},
+    {title:"Itens da Gira",items:[
+      {id:"i201",desc:"Rosas vermelhas e amarelas — Rateio",owner:"",done:false},{id:"i202",desc:"2 abacaxis",owner:"Karla (1)",done:false},{id:"i203",desc:"200g de salame",owner:"Jana",done:true},{id:"i204",desc:"Azeitona preta",owner:"João",done:true},{id:"i205",desc:"1 dúzia de ovos vermelhos",owner:"Família Neves",done:true},{id:"i206",desc:"Casca de alho",owner:"",done:false},{id:"i207",desc:"Mirra",owner:"",done:false},{id:"i208",desc:"Benjoim",owner:"",done:false},{id:"i209",desc:"Arruda para defumação",owner:"",done:false},{id:"i210",desc:"Guiné para defumação",owner:"",done:false},{id:"i211",desc:"2 litros de Alfazema",owner:"Dani Cida (1L) / Tati (1L)",done:true},{id:"i212",desc:"2kg Vela branca palito",owner:"Silvia",done:true},{id:"i213",desc:"2kg Vela branca e preta palito",owner:"Kiwi",done:true},{id:"i214",desc:"1kg Vela verde palito",owner:"Sofia",done:true},{id:"i215",desc:"Incensos (direita + esquerda)",owner:"Isa",done:true},{id:"i216",desc:"Essência esquerda",owner:"",done:false},{id:"i217",desc:"Carvão",owner:"Antony",done:true},{id:"i218",desc:"Obi",owner:"",done:false},{id:"i219",desc:"Orobo",owner:"",done:false},{id:"i220",desc:"Osun",owner:"Thais",done:true},{id:"i221",desc:"2 litros de Dendê",owner:"Bruna (1L)",done:false},{id:"i222",desc:"2 litros de Mel",owner:"Lari (1L)",done:false},{id:"i223",desc:"Sal grosso",owner:"Jana",done:true},{id:"i224",desc:"Sal refinado",owner:"Jana",done:true},{id:"i225",desc:"Açúcar mascavo",owner:"Jacque",done:true},{id:"i226",desc:"Groselha",owner:"Jacque",done:true},{id:"i227",desc:"Fósforo",owner:"Jacque",done:true},{id:"i228",desc:"2 pacotes milho pipoca",owner:"Vitória",done:true},{id:"i229",desc:"Canjica branca",owner:"Bruna",done:true},{id:"i230",desc:"1kg Farinha de milho branca",owner:"",done:false},{id:"i231",desc:"Café",owner:"Lari",done:true},{id:"i232",desc:"2 pacotes de açúcar",owner:"Karla",done:true},{id:"i233",desc:"Feitos e burilados — comida para Exu e PG",owner:"",done:false},
+    ]},
+    {title:"Lanche Coletivo",items:[
+      {id:"i301",desc:"80 pães francês",owner:"Família Neves (20) / João (20)",done:false},{id:"i302",desc:"3 tortas salgadas",owner:"Família Neves (1) / Dani Cida (1)",done:false},{id:"i303",desc:"3 bolos",owner:"Jacque (1) / Mary (1)",done:false},{id:"i304",desc:"6 refrigerantes",owner:"Karla (2) / João (1) / Naty (2)",done:false},{id:"i305",desc:"4 sucos",owner:"Tati (2)",done:false},{id:"i306",desc:"Peito de frango",owner:"",done:false},{id:"i307",desc:"Mussarela",owner:"",done:false},{id:"i308",desc:"Patê",owner:"",done:false},{id:"i309",desc:"Frutas",owner:"",done:false},
+    ]}
+  ]
+}];
+
+async function seedIfEmpty(){
+  const[e,c]=await Promise.all([getDocs(collection(db,"events")),getDocs(collection(db,"catalog"))]);
+  if(!e.empty&&!c.empty)return;
+  const batch=writeBatch(db);
+  if(e.empty)defaultEvents.forEach(ev=>batch.set(doc(db,"events",ev.id),{title:ev.title,date:ev.date,emoji:ev.emoji,obs:ev.obs||"",sections:ev.sections,order:ev.order}));
+  if(c.empty)defaultCatalog.forEach(i=>batch.set(doc(db,"catalog",i.id),{name:i.name,cat:i.cat}));
+  await batch.commit();
+}
+
+function allItems(){return events.flatMap(ev=>ev.sections.flatMap(s=>s.items))}
+function updateHeader(){const all=allItems(),done=all.filter(i=>i.done).length;document.getElementById("header-sub").textContent=`${done} de ${all.length} itens confirmados — ao vivo`}
+function render(){updateHeader();const m=document.getElementById("main");view==="home"?renderHome(m):renderAdmin(m)}
+
+function renderHome(m){
+  if(!events.length){m.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Nenhum evento.</div>';return}
+  m.innerHTML=events.map(ev=>{
+    const items=ev.sections.flatMap(s=>s.items),done=items.filter(i=>i.done).length,pct=items.length?Math.round(done/items.length*100):0;
+    return`<div class="card"><div class="event-header"><div class="event-title"><span>${ev.emoji}</span>${ev.title}</div><div class="event-date">📅 ${ev.date}</div>${ev.obs?`<div class="obs">${ev.obs}</div>`:""}<div class="progress-wrap"><div class="progress-label"><span>${done}/${items.length} confirmados</span><span style="color:${pct===100?"var(--green)":"var(--gold)"};font-weight:600">${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></div></div>${ev.sections.map((sec,si)=>`<div class="section-title">${sec.title}</div>${sec.items.map(it=>`<div class="item${it.done?" done":""}" onclick="window.openClaim('${ev.id}',${si},'${it.id}')"><div class="check"><svg class="chk" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-desc">${it.desc}</div>${it.owner?`<span class="owner-badge">${it.owner}</span>`:`<span class="pending-badge">pendente</span>`}</div>`).join("")}`).join("")}</div>`;
+  }).join("");
+}
+
+function renderAdmin(m){
+  m.innerHTML=`<div class="card"><div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold)">⚙️ Painel Admin</span><div style="display:flex;gap:8px"><button class="btn-gold" onclick="openModal('catalog')">📦 Catálogo</button><button class="btn-small" onclick="openModal('add-event')">+ Evento</button></div></div>${events.map(ev=>`<div class="admin-event-hdr"><span style="font-size:14px;font-weight:600;color:var(--gold)">${ev.emoji} ${ev.title} — ${ev.date}</span><button class="btn-danger" onclick="window.deleteEvent('${ev.id}')">Apagar</button></div>${ev.sections.map((sec,si)=>`<div class="section-title" style="padding-left:16px">${sec.title}</div>${sec.items.map(it=>`<div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border)"><div style="flex:1;font-size:13px">${it.desc}</div>${it.owner?`<span style="font-size:11px;background:rgba(124,92,191,0.2);color:#B49EE0;border-radius:20px;padding:2px 8px;white-space:nowrap">${it.owner}</span>`:""} ${it.done?`<button class="btn-danger" onclick="window.unclaimItem('${ev.id}',${si},'${it.id}')">↩</button>`:""}<button class="btn-danger" onclick="window.deleteItem('${ev.id}',${si},'${it.id}')">✕</button></div>`).join("")}<div style="padding:10px 16px"><button class="btn-small" onclick="window.openAddItem('${ev.id}',${si})">+ Item</button></div>`).join("")}`).join("")}</div>`;
+}
+
+function renderCatalog(){
+  const cats=[...new Set(catalog.map(i=>i.cat))].sort();
+  document.getElementById("catalog-list").innerHTML=cats.map(cat=>`<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 4px 4px">${cat}</div>${catalog.filter(i=>i.cat===cat).map(i=>`<div class="catalog-row"><div style="flex:1;font-size:13px">${i.name}</div><button class="btn-danger" onclick="window.delCatalog('${i.id}')">✕</button></div>`).join("")}`).join("");
+}
+
+window.showSugg=()=>{
+  const val=document.getElementById("new-item-desc").value.toLowerCase().trim();
+  const box=document.getElementById("suggestions");
+  if(!val){box.style.display="none";return}
+  const m=catalog.filter(i=>i.name.toLowerCase().includes(val)).slice(0,8);
+  if(!m.length){box.style.display="none";return}
+  box.innerHTML=m.map(i=>`<div class="suggestion-item" onclick="window.selSugg('${i.name.replace(/'/g,"\\'")}')"><span>${i.name}</span><span class="suggestion-cat">${i.cat}</span></div>`).join("");
+  box.style.display="block";
+};
+window.selSugg=(name)=>{document.getElementById("new-item-desc").value=name;document.getElementById("suggestions").style.display="none";document.getElementById("new-item-owner").focus()};
+window.handleKey=(e)=>{if(e.key==="Escape")document.getElementById("suggestions").style.display="none";if(e.key==="Enter")saveItem()};
+
+window.renderBulk=()=>{
+  const s=(document.getElementById("bulk-search")?.value||"").toLowerCase();
+  const f=catalog.filter(i=>i.name.toLowerCase().includes(s));
+  document.getElementById("bulk-list").innerHTML=f.map(i=>`<div class="bulk-item" onclick="window.togBulk('${i.id}')"><div class="bulk-check${bulkSel.has(i.id)?" sel":""}">${bulkSel.has(i.id)?'<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>':""}</div><div style="flex:1;font-size:13px">${i.name}</div><span style="font-size:10px;color:var(--muted)">${i.cat}</span></div>`).join("");
+};
+window.togBulk=(id)=>{bulkSel.has(id)?bulkSel.delete(id):bulkSel.add(id);renderBulk()};
+
+window.switchTab=(tab)=>{
+  document.getElementById("single-content").style.display=tab==="single"?"block":"none";
+  document.getElementById("bulk-content").style.display=tab==="bulk"?"block":"none";
+  document.getElementById("tab-single").classList.toggle("active",tab==="single");
+  document.getElementById("tab-bulk").classList.toggle("active",tab==="bulk");
+  if(tab==="bulk")renderBulk();
+};
+
+window.saveBulk=async()=>{
+  if(!bulkSel.size)return;
+  const ev=events.find(e=>e.id===addEvId);
+  const newItems=[...bulkSel].map(id=>{const c=catalog.find(x=>x.id===id);return{id:"i"+Date.now()+Math.random().toString(36).slice(2),desc:c.name,owner:"",done:false}});
+  const sections=ev.sections.map((sec,si)=>si!==addSecIdx?sec:{...sec,items:[...sec.items,...newItems]});
+  await updateDoc(doc(db,"events",addEvId),{sections});
+  bulkSel.clear();closeModal("add-item");
+};
+
+window.openClaim=(evId,secIdx,itId)=>{
+  const ev=events.find(e=>e.id===evId),it=ev.sections[secIdx].items.find(i=>i.id===itId);
+  if(it.done)return;
+  claimEvId=evId;claimSecIdx=secIdx;claimItemId=itId;
+  document.getElementById("claim-desc").textContent=it.desc;
+  document.getElementById("claim-name").value="";
+  openModal("claim");setTimeout(()=>document.getElementById("claim-name").focus(),300);
+};
+window.claimItem=async()=>{
+  const name=document.getElementById("claim-name").value.trim();if(!name)return;
+  const ev=events.find(e=>e.id===claimEvId);
+  const sections=ev.sections.map((sec,si)=>si!==claimSecIdx?sec:{...sec,items:sec.items.map(it=>it.id===claimItemId?{...it,owner:name,done:true}:it)});
+  await updateDoc(doc(db,"events",claimEvId),{sections});closeModal("claim");
+};
+window.unclaimItem=async(evId,secIdx,itId)=>{
+  const ev=events.find(e=>e.id===evId);
+  const sections=ev.sections.map((sec,si)=>si!==secIdx?sec:{...sec,items:sec.items.map(it=>it.id===itId?{...it,owner:"",done:false}:it)});
+  await updateDoc(doc(db,"events",evId),{sections});
+};
+window.deleteItem=async(evId,secIdx,itId)=>{
+  const ev=events.find(e=>e.id===evId);
+  const sections=ev.sections.map((sec,si)=>si!==secIdx?sec:{...sec,items:sec.items.filter(it=>it.id!==itId)});
+  await updateDoc(doc(db,"events",evId),{sections});
+};
+window.openAddItem=(evId,secIdx)=>{
+  addEvId=evId;addSecIdx=secIdx;bulkSel.clear();
+  document.getElementById("new-item-desc").value="";
+  document.getElementById("new-item-owner").value="";
+  document.getElementById("suggestions").style.display="none";
+  switchTab("single");openModal("add-item");
+  setTimeout(()=>document.getElementById("new-item-desc").focus(),300);
+};
+window.saveItem=async()=>{
+  const desc=document.getElementById("new-item-desc").value.trim(),owner=document.getElementById("new-item-owner").value.trim();
+  if(!desc)return;
+  document.getElementById("suggestions").style.display="none";
+  const ev=events.find(e=>e.id===addEvId);
+  const sections=ev.sections.map((sec,si)=>si!==addSecIdx?sec:{...sec,items:[...sec.items,{id:"i"+Date.now(),desc,owner,done:false}]});
+  await updateDoc(doc(db,"events",addEvId),{sections});closeModal("add-item");
+};
+window.deleteEvent=async(evId)=>{if(!confirm("Apagar evento?"))return;await deleteDoc(doc(db,"events",evId))};
+window.addEvent=async()=>{
+  const title=document.getElementById("new-title").value.trim(),date=document.getElementById("new-date").value.trim();
+  if(!title||!date)return;
+  await setDoc(doc(db,"events","ev-"+Date.now()),{title,date,emoji:document.getElementById("new-emoji").value||"🌟",obs:document.getElementById("new-obs").value.trim(),sections:[{title:"Itens",items:[]}],order:Date.now()});
+  closeModal("add-event");
+};
+window.addCatalog=async()=>{
+  const name=document.getElementById("cat-name").value.trim(),cat=document.getElementById("cat-cat").value.trim()||"Outros";
+  if(!name)return;
+  await setDoc(doc(db,"catalog","c"+Date.now()),{name,cat});
+  document.getElementById("cat-name").value="";document.getElementById("cat-cat").value="";
+};
+window.delCatalog=async(id)=>{await deleteDoc(doc(db,"catalog",id))};
+window.toggleAdmin=()=>{
+  if(!adminMode){openModal("admin-login");return}
+  view=view==="admin"?"home":"admin";
+  document.querySelector(".admin-btn").textContent=view==="admin"?"← Voltar":"⚙️ Admin ✓";
+  render();
+};
+window.loginAdmin=()=>{
+  const pass=document.getElementById("admin-pass").value;
+  if(pass===PASS){adminMode=true;document.querySelector(".admin-btn").textContent="⚙️ Admin ✓";closeModal("admin-login");view="admin";render();}
+  else document.getElementById("admin-error").style.display="block";
+};
+window.openModal=(name)=>{document.getElementById(`modal-${name}`).classList.add("open");if(name==="catalog")renderCatalog()};
+window.closeModal=(name)=>document.getElementById(`modal-${name}`).classList.remove("open");
+
+onSnapshot(collection(db,"events"),snap=>{events=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));render()});
+onSnapshot(collection(db,"catalog"),snap=>{catalog=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.name.localeCompare(b.name))});
+
+await seedIfEmpty();
+</script>
+</body>
+</html>
