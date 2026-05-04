@@ -35,6 +35,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .item.done .item-desc{color:var(--green);text-decoration:line-through;opacity:.7}
 .owner-badge{font-size:11px;background:rgba(124,92,191,0.2);color:#B49EE0;border-radius:20px;padding:3px 10px;font-weight:500;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
 .pending-badge{font-size:11px;background:var(--amberLight);color:var(--amber);border-radius:20px;padding:3px 10px;font-weight:500;flex-shrink:0}
+.unclaim-btn{font-size:11px;background:rgba(224,92,92,0.15);color:var(--danger);border:none;border-radius:20px;padding:3px 10px;font-weight:500;flex-shrink:0;cursor:pointer;font-family:'DM Sans',sans-serif}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;display:none;align-items:flex-end;justify-content:center}
 .modal.open{display:flex}
 .modal-box{background:var(--card2);border-radius:20px 20px 0 0;border:1px solid var(--border);border-bottom:none;padding:24px 20px 40px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;animation:slideUp .25s ease}
@@ -42,13 +43,16 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold2);margin-bottom:16px}
 .item-preview{background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:14px;color:var(--gold);line-height:1.4}
 label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px}
-input[type=text],input[type=password]{width:100%;padding:12px 14px;background:rgba(255,255,255,0.05);border:1.5px solid var(--border);border-radius:10px;font-size:15px;color:var(--text);outline:none;margin-bottom:12px;font-family:'DM Sans',sans-serif;transition:border .2s}
-input[type=text]:focus,input[type=password]:focus{border-color:var(--purple)}
+input[type=text],input[type=password],textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,0.05);border:1.5px solid var(--border);border-radius:10px;font-size:15px;color:var(--text);outline:none;margin-bottom:12px;font-family:'DM Sans',sans-serif;transition:border .2s}
+input[type=text]:focus,input[type=password]:focus,textarea:focus{border-color:var(--purple)}
+textarea{resize:vertical;min-height:80px}
 .btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--purple),#5B3FA8);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
 .btn-secondary{width:100%;padding:12px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif}
+.btn-danger-full{width:100%;padding:12px;background:rgba(224,92,92,0.15);color:var(--danger);border:1px solid rgba(224,92,92,0.3);border-radius:12px;font-size:14px;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif}
 .btn-danger{background:rgba(224,92,92,0.15);color:var(--danger);border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
 .btn-small{background:rgba(124,92,191,0.15);color:#B49EE0;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
 .btn-gold{background:rgba(201,169,110,0.15);color:var(--gold);border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-edit{background:rgba(232,169,48,0.15);color:var(--amber);border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .autocomplete-wrap{position:relative;margin-bottom:12px}
@@ -65,7 +69,7 @@ input[type=text]:focus,input[type=password]:focus{border-color:var(--purple)}
 .bulk-check{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:transparent}
 .bulk-check.sel{background:var(--purple);border-color:var(--purple)}
 .catalog-row{display:flex;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid var(--border)}
-.admin-event-hdr{padding:12px 16px;background:rgba(201,169,110,0.06);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.admin-event-hdr{padding:12px 16px;background:rgba(201,169,110,0.06);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -92,6 +96,17 @@ input[type=text]:focus,input[type=password]:focus{border-color:var(--purple)}
   </div>
 </div>
 
+<!-- Unclaim (participante) -->
+<div class="modal" id="modal-unclaim" onclick="closeModal('unclaim')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">✦ Desmarcar item</div>
+    <div class="item-preview" id="unclaim-desc"></div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6">Este item está confirmado. Deseja desmarcar e liberar para outra pessoa?</p>
+    <button class="btn-danger-full" onclick="doUnclaim()">Sim, desmarcar</button>
+    <button class="btn-secondary" onclick="closeModal('unclaim')">Cancelar</button>
+  </div>
+</div>
+
 <!-- Admin login -->
 <div class="modal" id="modal-admin-login" onclick="closeModal('admin-login')">
   <div class="modal-box" onclick="event.stopPropagation()">
@@ -104,15 +119,15 @@ input[type=text]:focus,input[type=password]:focus{border-color:var(--purple)}
   </div>
 </div>
 
-<!-- Add event -->
+<!-- Add/Edit event -->
 <div class="modal" id="modal-add-event" onclick="closeModal('add-event')">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-title">✦ Novo Evento</div>
+    <div class="modal-title" id="event-modal-title">✦ Novo Evento</div>
     <label>Emoji</label><input type="text" id="new-emoji" value="🌟">
     <label>Nome</label><input type="text" id="new-title" placeholder="Ex: Gira de Oxalá">
     <label>Data</label><input type="text" id="new-date" placeholder="Ex: 15/06/2025">
-    <label>Observações</label><input type="text" id="new-obs" placeholder="Instruções...">
-    <button class="btn-primary" onclick="addEvent()">Criar Evento</button>
+    <label>Observações</label><textarea id="new-obs" placeholder="Instruções para os médiuns..."></textarea>
+    <button class="btn-primary" id="event-modal-btn" onclick="saveEvent()">Criar Evento</button>
     <button class="btn-secondary" onclick="closeModal('add-event')">Cancelar</button>
   </div>
 </div>
@@ -165,7 +180,7 @@ import{getFirestore,collection,doc,onSnapshot,setDoc,updateDoc,deleteDoc,getDocs
 const cfg={apiKey:"AIzaSyAaEYRxCU1vqqRD8Ug0BVX6XG-iwjHzQ1A",authDomain:"terreiro-giras.firebaseapp.com",projectId:"terreiro-giras",storageBucket:"terreiro-giras.firebasestorage.app",messagingSenderId:"957777921310",appId:"1:957777921310:web:f4d9ab1c6e6264a5da350f"};
 const db=getFirestore(initializeApp(cfg));
 const PASS="terreiro2025";
-let adminMode=false,view="home",events=[],catalog=[],claimEvId,claimSecIdx,claimItemId,addEvId,addSecIdx,bulkSel=new Set();
+let adminMode=false,view="home",events=[],catalog=[],claimEvId,claimSecIdx,claimItemId,unclaimEvId,unclaimSecIdx,unclaimItId,addEvId,addSecIdx,editingEvId=null,bulkSel=new Set();
 
 const defaultCatalog=[
   {id:"c1",name:"Vela branca palito",cat:"Velas"},{id:"c2",name:"Vela preta palito",cat:"Velas"},{id:"c3",name:"Vela vermelha palito",cat:"Velas"},{id:"c4",name:"Vela verde palito",cat:"Velas"},{id:"c5",name:"Vela de 7 dias",cat:"Velas"},
@@ -210,12 +225,12 @@ function renderHome(m){
   if(!events.length){m.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Nenhum evento.</div>';return}
   m.innerHTML=events.map(ev=>{
     const items=ev.sections.flatMap(s=>s.items),done=items.filter(i=>i.done).length,pct=items.length?Math.round(done/items.length*100):0;
-    return`<div class="card"><div class="event-header"><div class="event-title"><span>${ev.emoji}</span>${ev.title}</div><div class="event-date">📅 ${ev.date}</div>${ev.obs?`<div class="obs">${ev.obs}</div>`:""}<div class="progress-wrap"><div class="progress-label"><span>${done}/${items.length} confirmados</span><span style="color:${pct===100?"var(--green)":"var(--gold)"};font-weight:600">${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></div></div>${ev.sections.map((sec,si)=>`<div class="section-title">${sec.title}</div>${sec.items.map(it=>`<div class="item${it.done?" done":""}" onclick="window.openClaim('${ev.id}',${si},'${it.id}')"><div class="check"><svg class="chk" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-desc">${it.desc}</div>${it.owner?`<span class="owner-badge">${it.owner}</span>`:`<span class="pending-badge">pendente</span>`}</div>`).join("")}`).join("")}</div>`;
+    return`<div class="card"><div class="event-header"><div class="event-title"><span>${ev.emoji}</span>${ev.title}</div><div class="event-date">📅 ${ev.date}</div>${ev.obs?`<div class="obs">${ev.obs}</div>`:""}<div class="progress-wrap"><div class="progress-label"><span>${done}/${items.length} confirmados</span><span style="color:${pct===100?"var(--green)":"var(--gold)"};font-weight:600">${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></div></div>${ev.sections.map((sec,si)=>`<div class="section-title">${sec.title}</div>${sec.items.map(it=>`<div class="item${it.done?" done":""}"><div class="check" onclick="window.handleItemClick('${ev.id}',${si},'${it.id}',${it.done})"><svg class="chk" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-desc" onclick="window.handleItemClick('${ev.id}',${si},'${it.id}',${it.done})">${it.desc}</div>${it.done?`<button class="unclaim-btn" onclick="window.openUnclaim('${ev.id}',${si},'${it.id}')">↩ Desmarcar</button>`:`<span class="pending-badge">pendente</span>`}</div>`).join("")}`).join("")}</div>`;
   }).join("");
 }
 
 function renderAdmin(m){
-  m.innerHTML=`<div class="card"><div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold)">⚙️ Painel Admin</span><div style="display:flex;gap:8px"><button class="btn-gold" onclick="openModal('catalog')">📦 Catálogo</button><button class="btn-small" onclick="openModal('add-event')">+ Evento</button></div></div>${events.map(ev=>`<div class="admin-event-hdr"><span style="font-size:14px;font-weight:600;color:var(--gold)">${ev.emoji} ${ev.title} — ${ev.date}</span><button class="btn-danger" onclick="window.deleteEvent('${ev.id}')">Apagar</button></div>${ev.sections.map((sec,si)=>`<div class="section-title" style="padding-left:16px">${sec.title}</div>${sec.items.map(it=>`<div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border)"><div style="flex:1;font-size:13px">${it.desc}</div>${it.owner?`<span style="font-size:11px;background:rgba(124,92,191,0.2);color:#B49EE0;border-radius:20px;padding:2px 8px;white-space:nowrap">${it.owner}</span>`:""} ${it.done?`<button class="btn-danger" onclick="window.unclaimItem('${ev.id}',${si},'${it.id}')">↩</button>`:""}<button class="btn-danger" onclick="window.deleteItem('${ev.id}',${si},'${it.id}')">✕</button></div>`).join("")}<div style="padding:10px 16px"><button class="btn-small" onclick="window.openAddItem('${ev.id}',${si})">+ Item</button></div>`).join("")}`).join("")}</div>`;
+  m.innerHTML=`<div class="card"><div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold)">⚙️ Painel Admin</span><div style="display:flex;gap:8px"><button class="btn-gold" onclick="openModal('catalog')">📦 Catálogo</button><button class="btn-small" onclick="openNewEvent()">+ Evento</button></div></div>${events.map(ev=>`<div class="admin-event-hdr"><span style="font-size:14px;font-weight:600;color:var(--gold)">${ev.emoji} ${ev.title} — ${ev.date}</span><div style="display:flex;gap:6px"><button class="btn-edit" onclick="window.openEditEvent('${ev.id}')">✏️ Editar</button><button class="btn-danger" onclick="window.deleteEvent('${ev.id}')">Apagar</button></div></div>${ev.sections.map((sec,si)=>`<div class="section-title" style="padding-left:16px">${sec.title}</div>${sec.items.map(it=>`<div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border)"><div style="flex:1;font-size:13px">${it.desc}</div>${it.owner?`<span style="font-size:11px;background:rgba(124,92,191,0.2);color:#B49EE0;border-radius:20px;padding:2px 8px;white-space:nowrap">${it.owner}</span>`:""} ${it.done?`<button class="btn-danger" onclick="window.adminUnclaim('${ev.id}',${si},'${it.id}')">↩</button>`:""}<button class="btn-danger" onclick="window.deleteItem('${ev.id}',${si},'${it.id}')">✕</button></div>`).join("")}<div style="padding:10px 16px"><button class="btn-small" onclick="window.openAddItem('${ev.id}',${si})">+ Item</button></div>`).join("")}`).join("")}</div>`;
 }
 
 function renderCatalog(){
@@ -223,42 +238,12 @@ function renderCatalog(){
   document.getElementById("catalog-list").innerHTML=cats.map(cat=>`<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 4px 4px">${cat}</div>${catalog.filter(i=>i.cat===cat).map(i=>`<div class="catalog-row"><div style="flex:1;font-size:13px">${i.name}</div><button class="btn-danger" onclick="window.delCatalog('${i.id}')">✕</button></div>`).join("")}`).join("");
 }
 
-window.showSugg=()=>{
-  const val=document.getElementById("new-item-desc").value.toLowerCase().trim();
-  const box=document.getElementById("suggestions");
-  if(!val){box.style.display="none";return}
-  const m=catalog.filter(i=>i.name.toLowerCase().includes(val)).slice(0,8);
-  if(!m.length){box.style.display="none";return}
-  box.innerHTML=m.map(i=>`<div class="suggestion-item" onclick="window.selSugg('${i.name.replace(/'/g,"\\'")}')"><span>${i.name}</span><span class="suggestion-cat">${i.cat}</span></div>`).join("");
-  box.style.display="block";
-};
-window.selSugg=(name)=>{document.getElementById("new-item-desc").value=name;document.getElementById("suggestions").style.display="none";document.getElementById("new-item-owner").focus()};
-window.handleKey=(e)=>{if(e.key==="Escape")document.getElementById("suggestions").style.display="none";if(e.key==="Enter")saveItem()};
-
-window.renderBulk=()=>{
-  const s=(document.getElementById("bulk-search")?.value||"").toLowerCase();
-  const f=catalog.filter(i=>i.name.toLowerCase().includes(s));
-  document.getElementById("bulk-list").innerHTML=f.map(i=>`<div class="bulk-item" onclick="window.togBulk('${i.id}')"><div class="bulk-check${bulkSel.has(i.id)?" sel":""}">${bulkSel.has(i.id)?'<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>':""}</div><div style="flex:1;font-size:13px">${i.name}</div><span style="font-size:10px;color:var(--muted)">${i.cat}</span></div>`).join("");
-};
-window.togBulk=(id)=>{bulkSel.has(id)?bulkSel.delete(id):bulkSel.add(id);renderBulk()};
-
-window.switchTab=(tab)=>{
-  document.getElementById("single-content").style.display=tab==="single"?"block":"none";
-  document.getElementById("bulk-content").style.display=tab==="bulk"?"block":"none";
-  document.getElementById("tab-single").classList.toggle("active",tab==="single");
-  document.getElementById("tab-bulk").classList.toggle("active",tab==="bulk");
-  if(tab==="bulk")renderBulk();
+// Item click — abre claim se pendente
+window.handleItemClick=(evId,secIdx,itId,isDone)=>{
+  if(!isDone)window.openClaim(evId,secIdx,itId);
 };
 
-window.saveBulk=async()=>{
-  if(!bulkSel.size)return;
-  const ev=events.find(e=>e.id===addEvId);
-  const newItems=[...bulkSel].map(id=>{const c=catalog.find(x=>x.id===id);return{id:"i"+Date.now()+Math.random().toString(36).slice(2),desc:c.name,owner:"",done:false}});
-  const sections=ev.sections.map((sec,si)=>si!==addSecIdx?sec:{...sec,items:[...sec.items,...newItems]});
-  await updateDoc(doc(db,"events",addEvId),{sections});
-  bulkSel.clear();closeModal("add-item");
-};
-
+// Claim
 window.openClaim=(evId,secIdx,itId)=>{
   const ev=events.find(e=>e.id===evId),it=ev.sections[secIdx].items.find(i=>i.id===itId);
   if(it.done)return;
@@ -273,11 +258,61 @@ window.claimItem=async()=>{
   const sections=ev.sections.map((sec,si)=>si!==claimSecIdx?sec:{...sec,items:sec.items.map(it=>it.id===claimItemId?{...it,owner:name,done:true}:it)});
   await updateDoc(doc(db,"events",claimEvId),{sections});closeModal("claim");
 };
-window.unclaimItem=async(evId,secIdx,itId)=>{
+
+// Unclaim para participante
+window.openUnclaim=(evId,secIdx,itId)=>{
+  const ev=events.find(e=>e.id===evId),it=ev.sections[secIdx].items.find(i=>i.id===itId);
+  unclaimEvId=evId;unclaimSecIdx=secIdx;unclaimItId=itId;
+  document.getElementById("unclaim-desc").textContent=it.desc+(it.owner?` (${it.owner})`:"");
+  openModal("unclaim");
+};
+window.doUnclaim=async()=>{
+  const ev=events.find(e=>e.id===unclaimEvId);
+  const sections=ev.sections.map((sec,si)=>si!==unclaimSecIdx?sec:{...sec,items:sec.items.map(it=>it.id===unclaimItId?{...it,owner:"",done:false}:it)});
+  await updateDoc(doc(db,"events",unclaimEvId),{sections});closeModal("unclaim");
+};
+
+// Admin unclaim direto
+window.adminUnclaim=async(evId,secIdx,itId)=>{
   const ev=events.find(e=>e.id===evId);
   const sections=ev.sections.map((sec,si)=>si!==secIdx?sec:{...sec,items:sec.items.map(it=>it.id===itId?{...it,owner:"",done:false}:it)});
   await updateDoc(doc(db,"events",evId),{sections});
 };
+
+// Edit event
+window.openEditEvent=(evId)=>{
+  const ev=events.find(e=>e.id===evId);
+  editingEvId=evId;
+  document.getElementById("event-modal-title").textContent="✏️ Editar Evento";
+  document.getElementById("event-modal-btn").textContent="Salvar alterações";
+  document.getElementById("new-emoji").value=ev.emoji||"🌟";
+  document.getElementById("new-title").value=ev.title||"";
+  document.getElementById("new-date").value=ev.date||"";
+  document.getElementById("new-obs").value=ev.obs||"";
+  openModal("add-event");
+};
+window.openNewEvent=()=>{
+  editingEvId=null;
+  document.getElementById("event-modal-title").textContent="✦ Novo Evento";
+  document.getElementById("event-modal-btn").textContent="Criar Evento";
+  document.getElementById("new-emoji").value="🌟";
+  document.getElementById("new-title").value="";
+  document.getElementById("new-date").value="";
+  document.getElementById("new-obs").value="";
+  openModal("add-event");
+};
+window.saveEvent=async()=>{
+  const title=document.getElementById("new-title").value.trim(),date=document.getElementById("new-date").value.trim();
+  if(!title||!date)return;
+  const data={title,date,emoji:document.getElementById("new-emoji").value||"🌟",obs:document.getElementById("new-obs").value.trim()};
+  if(editingEvId){
+    await updateDoc(doc(db,"events",editingEvId),data);
+  }else{
+    await setDoc(doc(db,"events","ev-"+Date.now()),{...data,sections:[{title:"Itens",items:[]}],order:Date.now()});
+  }
+  closeModal("add-event");
+};
+
 window.deleteItem=async(evId,secIdx,itId)=>{
   const ev=events.find(e=>e.id===evId);
   const sections=ev.sections.map((sec,si)=>si!==secIdx?sec:{...sec,items:sec.items.filter(it=>it.id!==itId)});
@@ -300,12 +335,8 @@ window.saveItem=async()=>{
   await updateDoc(doc(db,"events",addEvId),{sections});closeModal("add-item");
 };
 window.deleteEvent=async(evId)=>{if(!confirm("Apagar evento?"))return;await deleteDoc(doc(db,"events",evId))};
-window.addEvent=async()=>{
-  const title=document.getElementById("new-title").value.trim(),date=document.getElementById("new-date").value.trim();
-  if(!title||!date)return;
-  await setDoc(doc(db,"events","ev-"+Date.now()),{title,date,emoji:document.getElementById("new-emoji").value||"🌟",obs:document.getElementById("new-obs").value.trim(),sections:[{title:"Itens",items:[]}],order:Date.now()});
-  closeModal("add-event");
-};
+
+// Catalog
 window.addCatalog=async()=>{
   const name=document.getElementById("cat-name").value.trim(),cat=document.getElementById("cat-cat").value.trim()||"Outros";
   if(!name)return;
@@ -313,6 +344,44 @@ window.addCatalog=async()=>{
   document.getElementById("cat-name").value="";document.getElementById("cat-cat").value="";
 };
 window.delCatalog=async(id)=>{await deleteDoc(doc(db,"catalog",id))};
+
+// Autocomplete
+window.showSugg=()=>{
+  const val=document.getElementById("new-item-desc").value.toLowerCase().trim();
+  const box=document.getElementById("suggestions");
+  if(!val){box.style.display="none";return}
+  const m=catalog.filter(i=>i.name.toLowerCase().includes(val)).slice(0,8);
+  if(!m.length){box.style.display="none";return}
+  box.innerHTML=m.map(i=>`<div class="suggestion-item" onclick="window.selSugg('${i.name.replace(/'/g,"\\'")}')"><span>${i.name}</span><span class="suggestion-cat">${i.cat}</span></div>`).join("");
+  box.style.display="block";
+};
+window.selSugg=(name)=>{document.getElementById("new-item-desc").value=name;document.getElementById("suggestions").style.display="none";document.getElementById("new-item-owner").focus()};
+window.handleKey=(e)=>{if(e.key==="Escape")document.getElementById("suggestions").style.display="none";if(e.key==="Enter")saveItem()};
+
+// Bulk
+window.renderBulk=()=>{
+  const s=(document.getElementById("bulk-search")?.value||"").toLowerCase();
+  const f=catalog.filter(i=>i.name.toLowerCase().includes(s));
+  document.getElementById("bulk-list").innerHTML=f.map(i=>`<div class="bulk-item" onclick="window.togBulk('${i.id}')"><div class="bulk-check${bulkSel.has(i.id)?" sel":""}">${bulkSel.has(i.id)?'<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>':""}</div><div style="flex:1;font-size:13px">${i.name}</div><span style="font-size:10px;color:var(--muted)">${i.cat}</span></div>`).join("");
+};
+window.togBulk=(id)=>{bulkSel.has(id)?bulkSel.delete(id):bulkSel.add(id);renderBulk()};
+window.saveBulk=async()=>{
+  if(!bulkSel.size)return;
+  const ev=events.find(e=>e.id===addEvId);
+  const newItems=[...bulkSel].map(id=>{const c=catalog.find(x=>x.id===id);return{id:"i"+Date.now()+Math.random().toString(36).slice(2),desc:c.name,owner:"",done:false}});
+  const sections=ev.sections.map((sec,si)=>si!==addSecIdx?sec:{...sec,items:[...sec.items,...newItems]});
+  await updateDoc(doc(db,"events",addEvId),{sections});
+  bulkSel.clear();closeModal("add-item");
+};
+window.switchTab=(tab)=>{
+  document.getElementById("single-content").style.display=tab==="single"?"block":"none";
+  document.getElementById("bulk-content").style.display=tab==="bulk"?"block":"none";
+  document.getElementById("tab-single").classList.toggle("active",tab==="single");
+  document.getElementById("tab-bulk").classList.toggle("active",tab==="bulk");
+  if(tab==="bulk")renderBulk();
+};
+
+// Admin
 window.toggleAdmin=()=>{
   if(!adminMode){openModal("admin-login");return}
   view=view==="admin"?"home":"admin";
